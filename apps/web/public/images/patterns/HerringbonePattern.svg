@@ -1,0 +1,20 @@
+   <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="40"
+      height="40"
+    >
+      <path
+        d="M20 0L0 10v10l20-10zm0 10v10l20 10V20z"
+        stroke-width="1"
+        stroke="none"
+        fill="#27272a" 
+
+      />
+      <path
+        d="M20-10V0l20 10V0zm0 30L0 30v10l20-10zm0 10v10l20 10V40z"
+        stroke-width="1"
+        stroke="none"
+        fill="#27272a" 
+
+      />
+    </svg>

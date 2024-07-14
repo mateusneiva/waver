@@ -1,0 +1,58 @@
+version: "3"
+
+services:
+  web:
+    container_name: web
+    build:
+      context: .
+      dockerfile: ./apps/web/Dockerfile
+    restart: always
+    ports:
+      - 3000:3000
+    networks:
+      - app_network
+  api:
+    container_name: api
+    build:
+      context: .
+      dockerfile: ./apps/api/Dockerfile
+    restart: always
+    env_file: ./apps/api/.env
+    ports:
+      - 5002:5002
+    depends_on:
+      - postgres
+    networks:
+      - app_network
+    
+  discord-bot:
+    container_name: discord-bot
+    build:
+      context: .
+      dockerfile: ./apps/discord-bot/Dockerfile
+    restart: always
+    env_file: ./apps/discord-bot/.env
+    networks:
+      - app_network
+
+  postgres:
+    container_name: postgres
+    image: postgres:16
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - ./db:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - app_network
+      
+volumes:
+  db:
+
+networks:
+  app_network:
+    external: true
+

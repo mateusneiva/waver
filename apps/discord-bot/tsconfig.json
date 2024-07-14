@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "target": "ES2017",                         
+    "module": "CommonJS",
+    "rootDir": "./src/",
+    "outDir": "./dist",
+    "allowJs": true,                               
+    "strict": false,                                      
+    "esModuleInterop": true,                           
+    "skipLibCheck": true,            
+    "forceConsistentCasingInFileNames": true,    
+    "baseUrl": "./",       
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": ["src/**/*", "**/*.spec.ts"],
+  "exclude": ["node_modules"],
+  "ts-node": {
+    "files": true,
+    "require": ["tsconfig-paths/register"]
+  },
+  "files": [
+    "src/@types/discord.d.ts"
+  ],
+}

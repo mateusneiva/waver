@@ -2,7 +2,6 @@ import { Metadata } from "next";
 import { Mulish, Lexend_Deca } from "next/font/google";
 
 import { Providers } from "./providers";
-import { Navbar } from "../components/Navbar";
 import "../styles/main.css";
 
 export const metadata: Metadata = {
@@ -32,10 +31,7 @@ export default function RootLayout({
       className={`dark bg-zinc-950 font-mulish ${mulish.variable} ${lexendDeca.variable}`}
     >
       <body>
-        <Providers>
-          <Navbar />
-          {children}
-        </Providers>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

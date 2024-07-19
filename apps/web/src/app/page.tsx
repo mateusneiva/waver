@@ -17,10 +17,13 @@ import LinkIcon from "../assets/icons/LinkIcon";
 import SearchIcon from "../assets/icons/SearchIcon";
 import TwitchIcon from "../assets/icons/TwitchIcon";
 import YoutubeIcon from "../assets/icons/YoutubeIcon";
+import { Navbar } from "../components/Navbar";
 
 export default function Home() {
   return (
     <div className="flex flex-col items-center">
+      <Navbar />
+
       <div className="flex justify-center items-center w-full h-[600px] bg-memphisPattern">
         <div className="flex justify-center items-center w-full min-h-full bg-gradient-to-r from-transparent via-zinc-950 to-transparent">
           <Section delay={0}>
@@ -45,7 +48,7 @@ export default function Home() {
               <div className="flex gap-4 pt-5">
                 <Button
                   color="primary"
-                  className="rounded-full text-black px-10 font-bold w-full"
+                  className="rounded-full text-black px-10 font-semibold w-full"
                   target="_blank"
                   href="https://discord.com/oauth2/authorize?client_id=1147706930391949352&permissions=8&integration_type=0&scope=bot"
                 >
@@ -54,7 +57,7 @@ export default function Home() {
 
                 <Button
                   href="https://discord.com/oauth2/authorize?client_id=1147706930391949352&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fauth%2Fdiscord%2Fcallback&scope=identify+guilds+gdm.join+email+guilds.join+connections"
-                  className="rounded-full px-10 w-full"
+                  className="rounded-full px-10 font-semibold w-full"
                 >
                   Dashboard
                 </Button>

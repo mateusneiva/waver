@@ -1,15 +1,21 @@
 "use client";
 
+import { redirect } from "next/navigation";
 import { useState, useEffect, createContext, useContext } from "react";
 
-interface IUser {
+import { api } from "../services/API";
+import { Spinner } from "../components/UI/Spinner";
+
+export interface IUser {
   id: string;
-  username: string;
   avatar: string;
+  displayName: string;
+  username: string;
 }
 
 interface IAuthContext {
   isAuthenticated: boolean;
+  isLoading: boolean;
   user: IUser | null;
   login: (userData: IUser) => void;
   logout: () => void;
@@ -21,29 +27,38 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [user, setUser] = useState<IUser | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const login = (userData: IUser) => {};
+
+  const logout = () => {};
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
+    const fetchUser = async () => {
+      setIsLoading(true);
 
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
+      await api
+        .get<IUser>("/auth/status")
+        .then(({ data }) => {
+          console.log(data);
+          setUser(data);
+        })
+        .catch((err) => {
+          console.log(err);
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
+    };
+
+    fetchUser();
   }, []);
-
-  const login = (userData: IUser) => {
-    setUser(userData);
-    localStorage.setItem("user", JSON.stringify(userData));
-  };
-
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem("user");
-  };
 
   return (
     <AuthContext.Provider
       value={{
         isAuthenticated: !!user,
+        isLoading,
         user,
         login,
         logout,
@@ -64,19 +79,22 @@ export const useAuth = (): IAuthContext => {
   return context;
 };
 
-// export const ProtectRoute: React.FC<{ children: React.ReactNode }> = ({
-//   children,
-// }) => {
-//   const { isAuthenticated } = useAuth();
+export const ProtectRoute: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  const { user, isLoading } = useAuth();
 
-//   if (!isAuthenticated) {
-//     const clientId = process.env.DISCORD_CLIENT_ID;
-//     const redirectUri = process.env.DISCORD_REDIRECT_URI;
+  if (isLoading) {
+    return (
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+        <Spinner />
+      </div>
+    );
+  }
 
-//     return redirect(
-//       `https://discord.com/api/oauth2/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=identify+guilds+gdm.join+email+guilds.join+connections`
-//     );
-//   }
+  if (!isLoading && !user) {
+    return redirect("http://localhost:5002/api/auth/login");
+  }
 
-//   return children;
-// };
+  return children;
+};

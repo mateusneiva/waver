@@ -1,12 +1,35 @@
-import { Controller, Post, Body } from '@nestjs/common';
-import { AuthService } from './auth.service';
+import { Controller, Get, Post, Res, UseGuards } from '@nestjs/common';
+import { Response } from 'express';
 
-@Controller('auth')
+import { ROUTES } from '../utils/constants';
+import { AuthUser } from '../utils/decorators';
+import { AuthenticatedGuard, DiscordAuthGuard } from './utils/Guards';
+
+import { User } from '../entities/user.entity';
+
+@Controller(ROUTES.AUTH)
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  @Get('login')
+  @UseGuards(DiscordAuthGuard)
+  login() {}
 
-  @Post('discord/callback')
-  async discordCallback(@Body('code') code: string) {
-    return this.authService.handleDiscordCallback(code);
+  @Get('redirect')
+  @UseGuards(DiscordAuthGuard)
+  redirect(@Res() res: Response) {
+    res.redirect('http://localhost:3000/dashboard');
   }
+
+  @Get('status')
+  @UseGuards(AuthenticatedGuard)
+  status(@AuthUser() user: User) {
+    return {
+      id: user.discordId,
+      avatar: user.avatar,
+      displayName: user.displayName,
+      username: user.username,
+    };
+  }
+
+  @Post('logout')
+  logout() {}
 }

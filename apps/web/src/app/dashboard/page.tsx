@@ -1,14 +1,5 @@
-"use client";
-
-import { useAuth } from "../../context/AuthContext";
-import { UserProfile } from "../../components/UserProfile";
+import { redirect } from "next/navigation";
 
 export default function Dashboard() {
-  const { isAuthenticated } = useAuth();
-
-  return (
-    <div className="flex justify-center items-center h-screen">
-      {isAuthenticated && <UserProfile />}
-    </div>
-  );
+  return <>{redirect("/dashboard/servers")}</>;
 }

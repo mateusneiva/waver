@@ -23,7 +23,7 @@ export class GuildsController {
     @Inject(WebsocketHandler) private readonly wsHandler: WebsocketHandler,
   ) {}
 
-  @Get('config/:guildId')
+  @Get(':guildId/config')
   async getGuildConfig(@Param('guildId') guildId: string) {
     const guildConfig = await this.guildsService.getGuildConfig(guildId);
     if (!guildConfig)

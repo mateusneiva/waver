@@ -6,7 +6,7 @@ import { Skeleton } from "@nextui-org/skeleton";
 
 import { api } from "../services/API";
 
-interface IGuild {
+export interface IGuild {
   id: string;
   name: string;
   icon: string;
@@ -38,7 +38,7 @@ export function GuildsList() {
     <div className="bg-zinc-900 bg-opacity-50 border border-zinc-800 rounded-xl w-full">
       <div className="flex flex-col">
         <div className="border-b border-zinc-800 px-5 py-2.5">
-          <p className="text-zinc-400 text-sm font-medium">Server</p>
+          <p className="text-zinc-400 text-sm font-medium">Guild</p>
         </div>
 
         {loading && (
@@ -96,7 +96,7 @@ export function GuildsList() {
         {guilds?.map((guild) => {
           return (
             <NextLink
-              href={`/dashboard/servers/${guild.id}`}
+              href={`/dashboard/guild/${guild.id}`}
               className="flex items-center gap-4 border-b border-zinc-800 last:border-none p-1"
             >
               <div className="flex items-center gap-3 w-full h-full rounded-lg px-3.5 py-3 hover:bg-zinc-800 hover:bg-opacity-50">

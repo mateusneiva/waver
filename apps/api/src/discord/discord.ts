@@ -5,6 +5,7 @@ export interface IDiscordService {
   getBotGuilds();
   getUserGuilds(accessToken: string);
   getMutualGuilds(accessToken: string);
+  getGuild(guildId: string): Promise<AxiosResponse<PartialGuildChannel>>;
   getGuildChannels(
     guildId: string,
   ): Promise<AxiosResponse<PartialGuildChannel[]>>;

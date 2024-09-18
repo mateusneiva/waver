@@ -18,6 +18,12 @@ export class DiscordController {
     return this.discordService.getMutualGuilds(user.accessToken);
   }
 
+  @Get('guild/:guildId')
+  async getGuild(@Param('guildId') guildId: string) {
+    const { data } = await this.discordService.getGuild(guildId);
+    return data;
+  }
+
   @Get('guilds/:guildId/channels')
   async getGuildChannels(@Param('guildId') guildId: string) {
     const { data } = await this.discordService.getGuildChannels(guildId);

@@ -10,6 +10,7 @@ import { Embed } from "../components/Embed";
 import { Footer } from "../components/Footer";
 import { Slider } from "../components/Slider";
 import { Section } from "../components/Section";
+import { Navbar } from "../components/Navbar";
 
 import SpotifyIcon from "../assets/icons/SpotifyIcon";
 import ShuffleIcon from "../assets/icons/ShuffleIcon";
@@ -17,7 +18,6 @@ import LinkIcon from "../assets/icons/LinkIcon";
 import SearchIcon from "../assets/icons/SearchIcon";
 import TwitchIcon from "../assets/icons/TwitchIcon";
 import YoutubeIcon from "../assets/icons/YoutubeIcon";
-import { Navbar } from "../components/Navbar";
 
 export default function Home() {
   return (

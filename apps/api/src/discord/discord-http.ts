@@ -9,6 +9,7 @@ import {
 export interface IDiscordHttpService {
   fetchBotGuilds(): Promise<AxiosResponse<PartialGuild[]>>;
   fetchUserGuilds(accessToken: string): Promise<AxiosResponse<PartialGuild[]>>;
+  fetchGuild(guildId: string): Promise<AxiosResponse<PartialGuildChannel>>;
   fetchGuildChannels(
     guildId: string,
   ): Promise<AxiosResponse<PartialGuildChannel[]>>;

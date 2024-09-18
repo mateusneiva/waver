@@ -41,6 +41,19 @@ export class DiscordHttpService implements IDiscordHttpService {
     );
   }
 
+  fetchGuild(guildId: string) {
+    const TOKEN = process.env.DISCORD_BOT_TOKEN;
+
+    return axios.get<PartialGuildChannel>(
+      `${DISCORD_BASE_URL}/guilds/${guildId}`,
+      {
+        headers: {
+          Authorization: `Bot ${TOKEN}`,
+        },
+      },
+    );
+  }
+
   fetchGuildBans(guildId: string) {
     const TOKEN = process.env.DISCORD_BOT_TOKEN;
     return axios.get<GuildBanType[]>(

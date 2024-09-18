@@ -25,12 +25,16 @@ export class DiscordService implements IDiscordService {
       ({ permissions }) => (parseInt(permissions) & 0x8) === 0x8,
     );
     console.log(adminUserGuilds);
-    
+
     const mutualGuilds = userGuilds.filter((guild) =>
       botGuilds.some((botGuild) => botGuild.id === guild.id),
     );
 
     return mutualGuilds;
+  }
+
+  getGuild(guildId: string) {
+    return this.discordHttpService.fetchGuild(guildId);
   }
 
   getGuildChannels(guildId: string) {

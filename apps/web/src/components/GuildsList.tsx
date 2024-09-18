@@ -10,7 +10,7 @@ export interface IGuild {
   id: string;
   name: string;
   icon: string;
-  owner: boolean;
+  ownerId: string;
   permissions: string;
   features: string[];
 }
@@ -93,9 +93,10 @@ export function GuildsList() {
           </>
         )}
 
-        {guilds?.map((guild) => {
+        {guilds?.map((guild, index) => {
           return (
             <NextLink
+              key={index}
               href={`/dashboard/guild/${guild.id}`}
               className="flex items-center gap-4 border-b border-zinc-800 last:border-none p-1"
             >

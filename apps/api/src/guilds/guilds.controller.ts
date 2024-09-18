@@ -1,3 +1,4 @@
+import { Repository } from 'typeorm';
 import {
   Body,
   Controller,
@@ -10,31 +11,43 @@ import {
   Query,
   ValidationPipe,
 } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 
 import { IGuildsService } from './guilds.interface';
-
 import { ROUTES, SERVICES } from '../utils/constants';
 import { WebsocketHandler } from '../websocket/socket';
+import { GuildConfiguration } from 'src/entities/guildConfiguration.entity';
 
 @Controller(ROUTES.GUILDS)
 export class GuildsController {
   constructor(
     @Inject(SERVICES.GUILDS) private readonly guildsService: IGuildsService,
     @Inject(WebsocketHandler) private readonly wsHandler: WebsocketHandler,
+    @InjectRepository(GuildConfiguration)
+    private readonly guildConfigurationRepository: Repository<GuildConfiguration>,
   ) {}
 
-  @Get(':guildId/config')
+  @Get('config/:guildId')
   async getGuildConfig(@Param('guildId') guildId: string) {
+    console.log('Get GuildConfig');
+
     const guildConfig = await this.guildsService.getGuildConfig(guildId);
-    if (!guildConfig)
-      throw new HttpException(
-        'Guild Configuration was not found',
-        HttpStatus.NOT_FOUND,
-      );
+
+    if (!guildConfig) {
+      const guildConfiguration = new GuildConfiguration();
+
+      guildConfiguration.guildId = guildId;
+
+      const newGuildConfiguration =
+        this.guildConfigurationRepository.create(guildConfiguration);
+
+      return this.guildConfigurationRepository.save(newGuildConfiguration);
+    }
+
     return guildConfig;
   }
 
-  @Post(':guildId/config/prefix')
+  @Post('config/:guildId/prefix')
   async updateGuildPrefix(
     @Param('guildId') guildId: string,
     @Body('prefix') prefix: string,
@@ -44,7 +57,7 @@ export class GuildsController {
     return config;
   }
 
-  @Post(':guildId/config/welcome')
+  @Post('config/:guildId/welcome')
   async updateWelcomeChannel(
     @Param('guildId') guildId: string,
     @Body('channelId') channelId: string,
@@ -52,7 +65,7 @@ export class GuildsController {
     return this.guildsService.updateWelcomeChannel(guildId, channelId);
   }
 
-  @Get(':guildId/bans')
+  @Get('config/:guildId/bans')
   async getGuildBans(
     @Param('guildId') guildId: string,
     @Query('fromDate') fromDate: Date,
@@ -60,7 +73,7 @@ export class GuildsController {
     return this.guildsService.getGuildBans(guildId, fromDate);
   }
 
-  @Get(':guildId/logs')
+  @Get('guild/:guildId/logs')
   async getGuildLogs(
     @Param('guildId') guildId: string,
     @Query('fromDate') fromDate: Date,

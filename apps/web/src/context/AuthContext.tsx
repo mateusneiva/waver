@@ -40,7 +40,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       await api
         .get<IUser>("/auth/status")
         .then(({ data }) => {
-          console.log(data);
           setUser(data);
         })
         .catch((err) => {

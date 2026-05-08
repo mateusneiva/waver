@@ -1,6 +1,6 @@
 import { Client, Message } from 'discord.js';
 import { usePlayer } from 'discord-player';
-import { InfoEmbed } from '@/modules/embeds';
+import { InfoEmbed } from '../../modules/embeds';
 
 module.exports = {
   data: {
@@ -16,7 +16,7 @@ module.exports = {
 
       player.queue.delete();
 
-      const embed = InfoEmbed('Paia left the channel 👋');
+      const embed = InfoEmbed('Waver left the channel 👋');
 
       return message.reply({ embeds: [embed] });
     } catch (error) {

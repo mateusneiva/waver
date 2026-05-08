@@ -1,4 +1,4 @@
-import { BaseEmbed } from '@/modules/embeds';
+import { BaseEmbed } from '../../modules/embeds';
 import { Client, Message } from 'discord.js';
 
 module.exports = {

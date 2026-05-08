@@ -1,13 +1,15 @@
 import { Client } from 'discord.js';
 import { useMainPlayer } from 'discord-player';
 import { sync } from 'glob';
+import { resolve } from 'node:path';
 
 export async function loadEvents(client: Client) {
-  const eventFiles = sync('./src/events/**/*.ts||.js');
+  const eventsDir = resolve(__dirname, '../events');
+  const eventFiles = sync('**/*.{ts,js}', { cwd: eventsDir, nodir: true });
   const player = useMainPlayer();
 
   for (const file of eventFiles) {
-    const event = await import(`../../${file}`);
+    const event = require(resolve(eventsDir, file));
 
     if (!event.data?.name) {
       throw new TypeError(`The event at ${file} is missing a required "data.name" property.`);

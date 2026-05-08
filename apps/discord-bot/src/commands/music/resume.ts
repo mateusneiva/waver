@@ -1,6 +1,6 @@
 import { Client, Message } from 'discord.js';
 import { usePlayer } from 'discord-player';
-import { InfoEmbed, WarningEmbed } from '@/modules/embeds';
+import { InfoEmbed, WarningEmbed } from '../../modules/embeds';
 
 module.exports = {
   data: {
@@ -14,11 +14,11 @@ module.exports = {
     try {
       const player = usePlayer(guild);
 
-      if (!player.isPaused()) return message.reply({ embeds: [WarningEmbed('Player is already running')] });
+      if (!player.isPaused()) return message.reply({ embeds: [WarningEmbed('<:play:1501938994752127018> \u200b\u200b Player is already running')] });
 
       player.resume();
 
-      const embed = InfoEmbed('<:play:1184233729766457364> \u200b\u200b Player resumed');
+      const embed = InfoEmbed('<:play:1501938994752127018> \u200b\u200b Player resumed');
 
       return message.reply({ embeds: [embed] });
     } catch (error) {

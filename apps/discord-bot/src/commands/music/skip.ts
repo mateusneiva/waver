@@ -1,6 +1,6 @@
 import { Client, Message } from 'discord.js';
 import { usePlayer } from 'discord-player';
-import { InfoEmbed } from '@/modules/embeds';
+import { InfoEmbed } from '../../modules/embeds';
 
 module.exports = {
   data: {
@@ -17,8 +17,7 @@ module.exports = {
       player.skip();
 
       const track = player.queue.currentTrack;
-
-      const embed = InfoEmbed(`${track.raw.source === 'spotify' && '<:spotify:1184885826228867144> '}\u200b\u200b **[${track.title}](${track.url})** has been skipped`);
+      const embed = InfoEmbed(`**[${track.title}](${track.url})** has been skipped`);
 
       return message.reply({ embeds: [embed] });
     } catch (error) {

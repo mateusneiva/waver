@@ -1,6 +1,6 @@
 import { Client, Message } from 'discord.js';
 import { usePlayer } from 'discord-player';
-import { HelpEmbed, InfoEmbed } from '@/modules/embeds';
+import { HelpEmbed, InfoEmbed } from '../../modules/embeds';
 
 module.exports = {
   data: {
@@ -23,7 +23,7 @@ module.exports = {
 
       player.queue.removeTrack(track);
 
-      const embed = InfoEmbed(`[${track.title}](${track.url}) has been removed`);
+      const embed = InfoEmbed(`**[${track.title}](${track.url})** has been removed`);
 
       return message.reply({ embeds: [embed] });
     } catch (error) {

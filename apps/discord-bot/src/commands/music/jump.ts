@@ -1,6 +1,6 @@
 import { Client, Message } from 'discord.js';
 import { usePlayer } from 'discord-player';
-import { HelpEmbed, InfoEmbed } from '@/modules/embeds';
+import { HelpEmbed, InfoEmbed } from '../../modules/embeds';
 
 module.exports = {
   data: {

@@ -1,6 +1,5 @@
-import { GuildQueue, GuildQueueEvent, Track } from 'discord-player';
-import { InfoEmbed } from '../../modules/embeds';
-import { SpotifyExtractor } from '@discord-player/extractor';
+import { GuildQueueEvent, Track } from 'discord-player';
+import { getSourceIcon, InfoEmbed } from '../../modules/embeds';
 
 export const data = {
   name: GuildQueueEvent.PlayerStart,
@@ -8,7 +7,12 @@ export const data = {
 };
 
 export async function execute(queue, track: Track) {
-  const embed = InfoEmbed(`${track.raw.source === 'spotify' && '<:spotify:1184885826228867144> '}\u200b\u200b Started playing **[${track.title}](${track.url})**`);
+  if (!queue.metadata?.channel) {
+    return;
+  }
+
+  const sourceIcon = getSourceIcon(track.raw.source);
+  const embed = InfoEmbed(`${sourceIcon ? `${sourceIcon}\u200b\u200b ` : ''}Now playing **[${track.title}](${track.url})**`);
 
   await queue.metadata.channel.send({
     embeds: [embed],

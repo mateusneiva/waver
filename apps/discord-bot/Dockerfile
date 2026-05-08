@@ -22,6 +22,7 @@ COPY .gitignore .gitignore
 COPY --from=builder /app/out/json/ .
 COPY --from=builder /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
 RUN corepack enable
+ENV YOUTUBE_DL_SKIP_PYTHON_CHECK=1
 RUN pnpm install --frozen-lockfile
 
 COPY --from=builder /app/out/full/ .
@@ -32,10 +33,12 @@ RUN pnpm dlx turbo run build --filter=discord-bot
 FROM base AS runner
 WORKDIR /app
 
+RUN apk update && apk add --no-cache ffmpeg
+
 # Don't run production as root
 RUN addgroup --system --gid 1001 discordjs
 RUN adduser --system --uid 1001 discordjs
 USER discordjs
-COPY --from=installer /app . 
+COPY --from=installer --chown=discordjs:discordjs /app . 
 
 CMD node apps/discord-bot/dist/main.js

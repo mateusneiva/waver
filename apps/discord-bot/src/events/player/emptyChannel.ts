@@ -1,5 +1,5 @@
 import { GuildQueueEvent } from 'discord-player';
-import { InfoEmbed, WarningEmbed } from '../../modules/embeds';
+import { WarningEmbed } from '../../modules/embeds';
 
 export const data = {
   name: GuildQueueEvent.EmptyChannel,
@@ -7,6 +7,10 @@ export const data = {
 };
 
 export async function execute(queue, track) {
+  if (!queue.metadata?.channel) {
+    return;
+  }
+
   const embed = WarningEmbed(`Empty Channel`);
 
   await queue.metadata.channel.send({

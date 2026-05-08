@@ -1,13 +1,15 @@
 import { Client, Collection } from 'discord.js';
 import { sync } from 'glob';
+import { resolve } from 'node:path';
 
 export async function loadCommands(client: Client) {
-  const commandFiles = sync('./src/commands/**/*.ts||.js');
+  const commandsDir = resolve(__dirname, '../commands');
+  const commandFiles = sync('**/*.{ts,js}', { cwd: commandsDir, nodir: true });
 
   client.commands = new Collection();
 
   for (const file of commandFiles) {
-    const command = await import(`../../${file}`);
+    const command = require(resolve(commandsDir, file));
 
     if (!command.data?.name) {
       throw new TypeError(`The command at ${file} is missing a required "data.name" property.`);

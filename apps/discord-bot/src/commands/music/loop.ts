@@ -1,6 +1,6 @@
 import { Client, Message } from 'discord.js';
-import { usePlayer } from 'discord-player';
-import { HelpEmbed, InfoEmbed } from '@/modules/embeds';
+import { QueueRepeatMode, usePlayer } from 'discord-player';
+import { HelpEmbed, InfoEmbed } from '../../modules/embeds';
 
 module.exports = {
   data: {
@@ -19,18 +19,18 @@ module.exports = {
     const player = usePlayer(guild);
 
     try {
-      let mode: number | null = null;
+      let mode: QueueRepeatMode | null = null;
 
       if (loopMode === 'queue') {
-        mode = 2;
+        mode = QueueRepeatMode.QUEUE;
       }
 
       if (loopMode === 'track') {
-        mode = 1;
+        mode = QueueRepeatMode.TRACK;
       }
 
       if (loopMode === 'off') {
-        mode = 0;
+        mode = QueueRepeatMode.OFF;
       }
 
       if (mode === null) {

@@ -1,11 +1,12 @@
-import { Client, Message } from 'discord.js';
-import { usePlayer } from 'discord-player';
-import { InfoEmbed } from '../../modules/embeds';
+import { Client, Message } from "discord.js";
+import { usePlayer } from "discord-player";
+import { commandErrorEmbed } from "../../modules/command-feedback";
+import { InfoEmbed, WarningEmbed } from "../../modules/embeds";
 
 module.exports = {
   data: {
-    name: 'skip',
-    description: 'Skip the current track',
+    name: "skip",
+    description: "Skip the current track",
   },
 
   execute: async (client: Client, message: Message) => {
@@ -14,6 +15,10 @@ module.exports = {
     try {
       const player = usePlayer(guild);
 
+      if (!player?.queue?.currentTrack) {
+        return message.reply({ embeds: [WarningEmbed("There is no track playing right now.")] });
+      }
+
       player.skip();
 
       const track = player.queue.currentTrack;
@@ -21,7 +26,7 @@ module.exports = {
 
       return message.reply({ embeds: [embed] });
     } catch (error) {
-      return message.reply(`Something went wrong.`);
+      return message.reply({ embeds: [commandErrorEmbed(error)] });
     }
   },
 };

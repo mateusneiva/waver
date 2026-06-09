@@ -1,4 +1,5 @@
-import { Message, ChannelType, Events } from 'discord.js';
+import { Message, ChannelType, Events } from "discord.js";
+import { commandErrorEmbed } from "../../modules/command-feedback";
 
 module.exports = {
   data: {
@@ -8,7 +9,7 @@ module.exports = {
   execute: async (message: Message) => {
     if (message.author.bot || message.channel.type === ChannelType.DM) return;
 
-    const prefix: string = 'p!';
+    const prefix: string = "p!";
 
     if (!message.content.startsWith(prefix)) return;
 
@@ -24,15 +25,16 @@ module.exports = {
     try {
       if (command.data?.permission && !message.member.permissions.has(command.data?.permission)) {
         await message.reply({
-          content: 'You do not have the permission to use this command.',
+          content: "You do not have the permission to use this command.",
         });
 
         return;
       }
 
-      command.execute(message.client, message, args);
+      await command.execute(message.client, message, args);
     } catch (error) {
-      console.log(`Something went wrong: ${error}`);
+      console.error("[Command Error]", error);
+      await message.reply({ embeds: [commandErrorEmbed(error)] });
     }
   },
 };

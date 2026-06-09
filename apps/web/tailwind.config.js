@@ -1,11 +1,6 @@
-import { nextui } from "@nextui-org/react";
-
 /** @type {import('tailwindcss').Config} */
 const config = {
-  content: [
-    "./src/**/*.{js,ts,jsx,tsx,mdx}",
-    "../../node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}",
-  ],
+  content: ["./src/**/*.{js,ts,jsx,tsx,mdx}"],
   theme: {
     extend: {
       fontFamily: {
@@ -22,17 +17,6 @@ const config = {
     },
   },
   darkMode: "class",
-  plugins: [
-    nextui({
-      themes: {
-        dark: {
-          colors: {
-            primary: "#a3e635",
-          },
-        },
-      },
-    }),
-  ],
 };
 
-export default config;
+module.exports = config;

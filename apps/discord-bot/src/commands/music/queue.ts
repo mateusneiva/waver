@@ -1,18 +1,19 @@
-import { Client, Message } from 'discord.js';
-import { usePlayer } from 'discord-player';
-import { BaseEmbed, WarningEmbed } from '../../modules/embeds';
+import { Client, Message } from "discord.js";
+import { usePlayer } from "discord-player";
+import { commandErrorEmbed } from "../../modules/command-feedback";
+import { BaseEmbed, WarningEmbed } from "../../modules/embeds";
 
 module.exports = {
   data: {
-    name: 'queue',
-    description: 'Get a list of the full queue',
+    name: "queue",
+    description: "Get a list of the full queue",
   },
 
   execute: async (client: Client, message: Message) => {
     try {
       const player = usePlayer(message.guildId);
 
-      if (!player || !player.queue) return message.reply({ embeds: [WarningEmbed('Nothing in queue!')] });
+      if (!player || !player.queue) return message.reply({ embeds: [WarningEmbed("Nothing in queue!")] });
 
       const embed = BaseEmbed()
         .setTitle(`${player.queue.size} tracks in queue! (1/${Math.ceil(player.queue.size / 10)})`)
@@ -22,7 +23,7 @@ module.exports = {
             .map((track, index) => {
               return `${index}. [${track.author} - ${track.title}](${track.url}) [${track.duration}]\n`;
             })
-            .join('')}
+            .join("")}
           
           \n
           `,
@@ -31,7 +32,7 @@ module.exports = {
 
       return message.reply({ embeds: [embed] });
     } catch (error) {
-      return message.reply('Something went wrong');
+      return message.reply({ embeds: [commandErrorEmbed(error)] });
     }
   },
 };

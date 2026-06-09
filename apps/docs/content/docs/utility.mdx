@@ -1,0 +1,49 @@
+---
+title: Utility Commands
+description: Bot status, help, and informational commands.
+icon: Wrench
+---
+
+These commands provide general information about the bot and help you navigate Waver's features.
+
+---
+
+### `p!help`
+
+Displays a complete list of all available commands grouped by category (**Getting Started** and **Player**), including a brief description of each command. This is a great starting point if you're unfamiliar with Waver.
+
+| Detail | Value |
+|---|---|
+| **Usage** | `p!help` |
+| **Requires** | None |
+
+The help embed includes:
+- **Getting Started**: `help`, `setup`, `ping`
+- **Player**: `play`, `queue`, `pause`, `stop`, `skip`, `jump`, `clear`
+
+---
+
+### `p!ping`
+
+Measures the bot's responsiveness. Returns two values:
+
+| Metric | Description |
+|---|---|
+| **Latency** | The time between your message and Waver's response (round-trip). |
+| **API Latency** | The WebSocket heartbeat latency between the bot and Discord's servers. |
+
+| Detail | Value |
+|---|---|
+| **Usage** | `p!ping` |
+| **Requires** | None |
+| **Permission** | Administrator |
+
+**Example response:**
+
+```
+Pong
+Latency: 42ms
+API Latency: 18ms
+```
+
+> This command requires Administrator permissions as defined in the bot's configuration.

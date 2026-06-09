@@ -1,9 +1,9 @@
-import { GuildQueueEvent, Track } from 'discord-player';
-import { getSourceIcon, InfoEmbed } from '../../modules/embeds';
+import { GuildQueueEvent, Track } from "discord-player";
+import { getSourceIcon, InfoEmbed } from "../../modules/embeds";
 
 export const data = {
   name: GuildQueueEvent.PlayerStart,
-  type: 'player',
+  type: "player",
 };
 
 export async function execute(queue, track: Track) {
@@ -11,8 +11,12 @@ export async function execute(queue, track: Track) {
     return;
   }
 
+  delete queue.metadata.disconnectReason;
+
   const sourceIcon = getSourceIcon(track.raw.source);
-  const embed = InfoEmbed(`${sourceIcon ? `${sourceIcon}\u200b\u200b ` : ''}Now playing **[${track.title}](${track.url})**`);
+  const embed = InfoEmbed(
+    `${sourceIcon ? `${sourceIcon} \u200b\u200b ` : ""} Now playing **[${track.title}](${track.url})**`,
+  );
 
   await queue.metadata.channel.send({
     embeds: [embed],

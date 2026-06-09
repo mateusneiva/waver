@@ -1,0 +1,61 @@
+---
+title: Introduction
+description: Learn everything about Waver, the high-fidelity Discord music bot.
+icon: BookOpen
+---
+
+import { Cards, Card } from 'fumadocs-ui/components/card';
+import { Zap, Download, Music, Wrench } from 'lucide-react';
+
+**Waver** is a premium Discord music bot designed to deliver crystal-clear, lag-free audio playback across all your favorite platforms — Spotify, YouTube, SoundCloud, and more.
+
+Whether you're hosting a late-night listening party or just vibing solo, Waver makes it effortless.
+
+## Why Waver?
+
+- **High-Fidelity Audio**: Enjoy music the way it was meant to be heard, with no quality loss or stuttering.
+- **Multi-Platform Support**: Play from Spotify, YouTube, SoundCloud, and direct links — all in one bot.
+- **Queue Management**: Full control over your listening experience with a powerful queue system.
+- **Low Latency**: Built for performance. Waver connects and plays faster than the competition.
+- **Dead Simple**: No complicated setup. Invite, join a voice channel, and type `p!play`.
+
+## Documentation Structure
+
+This documentation is organized into the following sections:
+
+<Cards>
+  <Card
+    icon={<Zap />}
+    title="Quick Start"
+    description="Get up and running with Waver in under a minute."
+    href="/docs/quick-start"
+  />
+  <Card
+    icon={<Download />}
+    title="Installation & Setup"
+    description="How to invite the bot and configure permissions properly."
+    href="/docs/installation"
+  />
+  <Card
+    icon={<Music />}
+    title="Music Commands"
+    description="Play, pause, skip, loop and manage your music queue."
+    href="/docs/music"
+  />
+  <Card
+    icon={<Wrench />}
+    title="Utility Commands"
+    description="Bot info, latency checks, and help commands."
+    href="/docs/utility"
+  />
+</Cards>
+
+## Default Prefix
+
+Waver uses the prefix **`p!`** for all commands. Simply type the prefix followed by the command name in any text channel the bot can access.
+
+```bash
+p!play your favorite song
+```
+
+Ready to get started? Head to the **[Quick Start](/docs/quick-start)** guide.

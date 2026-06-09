@@ -1,0 +1,195 @@
+---
+title: Music Commands
+description: Full reference for all music playback and queue management commands.
+icon: Music
+---
+
+Waver's core feature is its music player, powered by [discord-player](https://discord-player.js.org/). These commands give you full control over playback and the queue in your server.
+
+> You must be in a voice channel to use any music command. Waver will automatically join your voice channel when you play a track.
+
+---
+
+## Playback
+
+### `p!play`
+
+Searches for and plays a song or playlist. Supports direct URLs (Spotify, YouTube, SoundCloud) as well as plain text search queries. If a song is already playing, the new track is added to the end of the queue.
+
+| Detail | Value |
+|---|---|
+| **Usage** | `p!play <url-or-search-query>` |
+| **Aliases** | None |
+| **Requires** | Voice channel |
+
+**Examples:**
+
+```bash
+# Search by name
+p!play never gonna give you up
+
+# Spotify track link
+p!play https://open.spotify.com/track/4cOdK2wGLETKBW3PvgPWqT
+
+# YouTube playlist
+p!play https://www.youtube.com/playlist?list=PLrAXtmErZgOeiKm4sgNOknGvNjby9efdf
+```
+
+When a track or playlist is added, Waver replies with a rich embed showing:
+- Track or playlist name (with link)
+- Duration
+- Position in queue (for individual tracks)
+- Number of tracks added (for playlists)
+
+---
+
+### `p!pause`
+
+Pauses the currently playing track. If the player is already paused, Waver will let you know.
+
+| Detail | Value |
+|---|---|
+| **Usage** | `p!pause` |
+| **Requires** | Active playback |
+
+---
+
+### `p!resume`
+
+Resumes a paused track. If the player is already running, Waver will let you know.
+
+| Detail | Value |
+|---|---|
+| **Usage** | `p!resume` |
+| **Requires** | Paused playback |
+
+---
+
+### `p!skip`
+
+Skips the current track and moves to the next one in the queue. Waver replies with the name of the track that was skipped.
+
+| Detail | Value |
+|---|---|
+| **Usage** | `p!skip` |
+| **Requires** | Active playback |
+
+---
+
+### `p!stop`
+
+Completely stops playback, clears the entire queue, and disconnects Waver from the voice channel. Use this when the listening session is over.
+
+| Detail | Value |
+|---|---|
+| **Usage** | `p!stop` |
+| **Requires** | Active queue |
+
+---
+
+### `p!volume`
+
+Sets the player volume to a value between 0 and 100. Invalid or out-of-range values will be rejected.
+
+| Detail | Value |
+|---|---|
+| **Usage** | `p!volume <0-100>` |
+| **Requires** | Active playback |
+
+**Example:**
+```bash
+p!volume 50
+```
+
+---
+
+### `p!loop`
+
+Sets the repeat mode for the player. You must specify one of the three modes:
+
+| Mode | Behavior |
+|---|---|
+| `track` | Repeats the currently playing track indefinitely. |
+| `queue` | Repeats the entire queue after it finishes. |
+| `off` | Disables looping (default). |
+
+| Detail | Value |
+|---|---|
+| **Usage** | `p!loop <queue\|track\|off>` |
+| **Requires** | Active playback |
+
+**Examples:**
+```bash
+# Repeat the current song
+p!loop track
+
+# Repeat the entire queue
+p!loop queue
+
+# Turn off looping
+p!loop off
+```
+
+---
+
+## Queue Management
+
+### `p!queue`
+
+Displays the current queue with up to 10 tracks per page, including track name, author, duration, and a link. Also shows the total queue duration in the footer.
+
+| Detail | Value |
+|---|---|
+| **Usage** | `p!queue` |
+| **Requires** | Active queue |
+
+---
+
+### `p!clear`
+
+Removes all tracks from the queue but keeps the currently playing song. Useful when you want to start a fresh queue without interrupting the current playback.
+
+| Detail | Value |
+|---|---|
+| **Usage** | `p!clear` |
+| **Requires** | Active queue with tracks |
+
+---
+
+### `p!remove`
+
+Removes a specific track from the queue by its position index (starting at 1). Use `p!queue` first to see the current track positions.
+
+| Detail | Value |
+|---|---|
+| **Usage** | `p!remove <track-index>` |
+| **Requires** | Active queue |
+
+**Example:**
+```bash
+# Remove the 3rd track from the queue
+p!remove 3
+```
+
+---
+
+### `p!jump`
+
+Jumps directly to a specific track in the queue by its position index (starting at 1), skipping all tracks before it. The skipped tracks are removed from the queue.
+
+| Detail | Value |
+|---|---|
+| **Usage** | `p!jump <track-index>` |
+| **Requires** | Active queue |
+
+**Example:**
+```bash
+# Jump to the 5th track in the queue
+p!jump 5
+```
+
+---
+
+## Auto-Disconnect
+
+Waver will automatically leave the voice channel after **5 minutes** of inactivity (when the queue ends and no new tracks are added). This helps free up resources and keeps your server tidy.

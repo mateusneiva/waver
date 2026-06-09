@@ -1,5 +1,5 @@
-import { Spinner as NextSpinner } from "@nextui-org/react";
+import { Spinner as HeroSpinner } from "@heroui/react";
 
 export function Spinner({ ...props }) {
-  return <NextSpinner size="lg" {...props} />;
+  return <HeroSpinner size="lg" {...props} />;
 }

@@ -1,15 +1,17 @@
-import { GuildQueueEvent } from 'discord-player';
-import { WarningEmbed } from '../../modules/embeds';
+import { GuildQueueEvent } from "discord-player";
+import { WarningEmbed } from "../../modules/embeds";
 
 export const data = {
   name: GuildQueueEvent.EmptyChannel,
-  type: 'player',
+  type: "player",
 };
 
 export async function execute(queue, track) {
   if (!queue.metadata?.channel) {
     return;
   }
+
+  queue.metadata.disconnectReason = "emptyChannel";
 
   const embed = WarningEmbed(`Empty Channel`);
 

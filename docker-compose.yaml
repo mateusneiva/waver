@@ -4,18 +4,51 @@ services:
     build:
       context: .
       dockerfile: ./apps/web/Dockerfile
-    restart: always
+    restart: unless-stopped
+    env_file: ./apps/web/.env
+    expose:
+      - 3000
+
+  nginx:
+    container_name: nginx
+    build:
+      context: .
+      dockerfile: ./docker/nginx/Dockerfile
+    restart: unless-stopped
     ports:
-      - 3000:3000
-    
+      - 80:80
+      - 443:443
+    volumes:
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - certbot-webroot:/var/www/certbot:ro
+    depends_on:
+      - web
+      - docs
+
   discord-bot:
     container_name: discord-bot
     build:
       context: .
       dockerfile: ./apps/discord-bot/Dockerfile
-    restart: always
+    restart: unless-stopped
     env_file: ./apps/discord-bot/.env
-      
-volumes:
-  db:
 
+  docs:
+    container_name: docs
+    build:
+      context: .
+      dockerfile: ./apps/docs/Dockerfile
+    restart: unless-stopped
+    expose:
+      - 3000
+
+  status:
+    container_name: status
+    build:
+      context: .
+      dockerfile: ./apps/status/Dockerfile
+    restart: unless-stopped
+    env_file: ./apps/status/.env
+
+volumes:
+  certbot-webroot:

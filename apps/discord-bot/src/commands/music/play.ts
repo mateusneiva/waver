@@ -1,8 +1,10 @@
-import { Client, Message } from 'discord.js';
-import { QueryType, useMainPlayer } from 'discord-player';
-import { BaseEmbed, getSourceIcon, HelpEmbed, WarningEmbed } from '../../modules/embeds';
+import { Client, Message } from "discord.js";
+import { useMainPlayer } from "discord-player";
+import { commandErrorEmbed, usageEmbed } from "../../modules/command-feedback";
+import { BaseEmbed, getSourceIcon, WarningEmbed } from "../../modules/embeds";
+import { getSearchEngine } from "../../modules/search-engine";
 
-const SPOTIFY_DEFAULT_THUMBNAIL = 'https://www.scdn.co/i/_global/twitter_card-default.jpg';
+const SPOTIFY_DEFAULT_THUMBNAIL = "https://www.scdn.co/i/_global/twitter_card-default.jpg";
 
 function isSpotifyDefaultThumbnail(thumbnail?: string | null) {
   return thumbnail === SPOTIFY_DEFAULT_THUMBNAIL;
@@ -10,9 +12,9 @@ function isSpotifyDefaultThumbnail(thumbnail?: string | null) {
 
 function isSpotifyTrack(track: { source?: string | null; url?: string | null; raw?: { source?: string | null } }) {
   return (
-    track.source === 'spotify' ||
-    track.raw?.source === 'spotify' ||
-    /^https?:\/\/(open\.)?spotify\.com\//i.test(track.url ?? '')
+    track.source === "spotify" ||
+    track.raw?.source === "spotify" ||
+    /^https?:\/\/(open\.)?spotify\.com\//i.test(track.url ?? "")
   );
 }
 
@@ -30,41 +32,23 @@ async function resolveSpotifyThumbnail(url: string, fallback?: string | null) {
   }
 }
 
-function getSearchEngine(query: string) {
-  if (/^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\//i.test(query)) {
-    return query.includes('list=') ? QueryType.YOUTUBE_PLAYLIST : QueryType.YOUTUBE_VIDEO;
-  }
-
-  if (/^(https?:\/\/)?(open\.)?spotify\.com\/track\//i.test(query)) {
-    return QueryType.SPOTIFY_SONG;
-  }
-
-  if (/^(https?:\/\/)?(open\.)?spotify\.com\/playlist\//i.test(query)) {
-    return QueryType.SPOTIFY_PLAYLIST;
-  }
-
-  if (/^(https?:\/\/)?(open\.)?spotify\.com\/album\//i.test(query)) {
-    return QueryType.SPOTIFY_ALBUM;
-  }
-
-  return QueryType.AUTO;
-}
-
 module.exports = {
   data: {
-    name: 'play',
-    usage: 'paia!play <url>',
-    description: 'Play a song or playlist by providing a link or query',
+    name: "play",
+    usage: "p!play <url-or-search-query>",
+    description: "Play a song or playlist by providing a link or query",
   },
 
   execute: async (client: Client, message: Message, args: string[]) => {
     const channel = message.member.voice.channel;
 
-    if (!channel) return message.reply({ embeds: [WarningEmbed('You need to be in a voice channel')] });
+    if (!channel) return message.reply({ embeds: [WarningEmbed("You need to be in a voice channel")] });
 
-    const query = args.toString().split(',').join(' ');
+    const query = args.toString().split(",").join(" ");
 
-    if (!query) return message.reply({ embeds: [HelpEmbed(__filename)] });
+    if (!query) {
+      return message.reply({ embeds: [usageEmbed(__filename, "Missing parameter: provide a URL or a search query.")] });
+    }
 
     const mainPlayer = useMainPlayer();
 
@@ -80,19 +64,21 @@ module.exports = {
           disableBiquad: true,
           disableEqualizer: true,
           disableVolume: true,
+          leaveOnEnd: true,
+          leaveOnEndCooldown: 300_000,
         },
       });
 
       if (!searchResult) {
-        return message.reply({ embeds: [WarningEmbed('No results found')] });
+        return message.reply({ embeds: [WarningEmbed("No results found")] });
       }
 
       const isPlaylist = searchResult.hasPlaylist();
       const sourceIcon = getSourceIcon(track.raw.source);
-      const sourcePrefix = sourceIcon ? `${sourceIcon}\u200b\u200b ` : '';
+      const sourcePrefix = sourceIcon ? `${sourceIcon} ` : "";
 
-      if(queue.size === 0) {
-        return;  
+      if (queue.size === 0) {
+        return;
       }
 
       const embedThumbnail =
@@ -102,18 +88,18 @@ module.exports = {
 
       const playEmbed = isPlaylist
         ? BaseEmbed()
-            .setDescription(`${sourcePrefix} **Added Playlist**`)
+            .setDescription(`${sourcePrefix} \u200b\u200b **Added Playlist**`)
             .setFields(
-              { name: 'Playlist', value: `**[${searchResult.playlist.title}](${searchResult.playlist.url})**` },
-              { name: 'Playlist Length', value: `${searchResult.playlist.durationFormatted}`, inline: true },
-              { name: 'Tracks', value: `${searchResult.playlist.tracks.length}`, inline: true },
+              { name: "Playlist", value: `**[${searchResult.playlist.title}](${searchResult.playlist.url})**` },
+              { name: "Playlist Length", value: `${searchResult.playlist.durationFormatted}`, inline: true },
+              { name: "Tracks", value: `${searchResult.playlist.tracks.length}`, inline: true },
             )
         : BaseEmbed()
-            .setDescription(`${sourcePrefix} **Added Track**`)
+            .setDescription(`${sourcePrefix} \u200b\u200b **Added Track**`)
             .setFields(
-              { name: 'Track', value: `**[${track.title}](${track.url})**` },
-              { name: 'Track Length', value: `${track.duration}`, inline: true },
-              { name: 'Position in queue', value: `${queue.size}`, inline: true },
+              { name: "Track", value: `**[${track.title}](${track.url})**` },
+              { name: "Track Length", value: `${track.duration}`, inline: true },
+              { name: "Position in queue", value: `${queue.size}`, inline: true },
             );
 
       if (embedThumbnail) {
@@ -122,7 +108,7 @@ module.exports = {
 
       return message.reply({ embeds: [playEmbed] });
     } catch (error) {
-      return message.reply('Something went wrong');
+      return message.reply({ embeds: [commandErrorEmbed(error)] });
     }
   },
 };

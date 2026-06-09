@@ -1,0 +1,52 @@
+---
+title: Installation & Setup
+description: How to properly add Waver to your Discord server and configure permissions.
+icon: Download
+---
+
+This page covers everything you need to know about adding Waver to your server, setting up the right permissions, and ensuring it works flawlessly.
+
+## Inviting the Bot
+
+1. Visit [waverbot.com](https://waverbot.com) and click the **Invite** button.
+2. You'll be redirected to Discord's authorization page.
+3. Select the server you want to add Waver to from the dropdown menu.
+4. Review the requested permissions and click **Authorize**.
+
+> After authorizing, Waver will appear in your server's member list and will be ready to use immediately.
+
+## Required Permissions
+
+For the best experience, Waver needs the following Discord permissions:
+
+| Permission | Required | Description |
+|---|---|---|
+| **View Channels** | ✅ | Allows the bot to see text and voice channels. |
+| **Send Messages** | ✅ | Allows the bot to respond to commands. |
+| **Embed Links** | ✅ | Allows the bot to send rich embeds (now playing, queue, etc). |
+| **Connect** | ✅ | Allows the bot to join voice channels. |
+| **Speak** | ✅ | Allows the bot to transmit audio in voice channels. |
+| **Read Message History** | Recommended | Helps the bot track command context. |
+
+## Voice Channel Requirements
+
+For Waver to play music:
+
+- **You must be in a voice channel** before using the `p!play` command.
+- The bot must have permission to **Connect** and **Speak** in that specific voice channel.
+- If the voice channel has a user limit, make sure there's room for the bot.
+
+## Troubleshooting
+
+### Bot doesn't respond to commands
+- Make sure the bot has **View Channels** and **Send Messages** permissions in the text channel.
+- Check that you're using the correct prefix: `p!`
+- Run `p!ping` to verify the bot is online.
+
+### Bot joins but doesn't play audio
+- Ensure the bot has **Speak** permission in the voice channel.
+- Try disconnecting and reconnecting the bot with `p!stop` followed by `p!play`.
+
+### Bot doesn't join the voice channel
+- You must be in a voice channel before running `p!play`.
+- Make sure the bot has **Connect** permission for the voice channel.

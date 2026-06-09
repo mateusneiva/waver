@@ -1,21 +1,21 @@
-import { Readable } from 'node:stream';
-import { onBeforeCreateStream, Player, QueryType } from 'discord-player';
+import { Readable } from "node:stream";
+import { onBeforeCreateStream, Player, QueryType } from "discord-player";
 
 function isSpotifyTrack(queryType: string, track: { source?: string; url?: string; raw?: { source?: string } }) {
   return (
     queryType === QueryType.SPOTIFY_SONG ||
-    track.source === 'spotify' ||
-    track.raw?.source === 'spotify' ||
-    /^https?:\/\/(open\.)?spotify\.com\/track\//i.test(track.url ?? '')
+    track.source === "spotify" ||
+    track.raw?.source === "spotify" ||
+    /^https?:\/\/(open\.)?spotify\.com\/track\//i.test(track.url ?? "")
   );
 }
 
 export function registerPlayerStreamHooks(player: Player) {
-  player.on('debug', (message) => {
+  player.on("debug", (message) => {
     console.log(`[Player Debug] ${message}`);
   });
 
-  player.events.on('debug', (queue, message) => {
+  player.events.on("debug", (queue, message) => {
     console.log(`[Queue Debug ${queue.guild.name}] ${message}`);
   });
 
@@ -44,11 +44,11 @@ export function registerPlayerStreamHooks(player: Player) {
       return stream;
     }
 
-    if (typeof stream === 'string') {
+    if (typeof stream === "string") {
       const response = await fetch(stream);
 
       if (!response.body) {
-        throw new Error('Failed to create bridged YouTube stream');
+        throw new Error("Failed to create bridged YouTube stream");
       }
 
       return Readable.fromWeb(response.body as never);

@@ -1,11 +1,12 @@
-import { Client, Message } from 'discord.js';
-import { usePlayer } from 'discord-player';
-import { InfoEmbed, WarningEmbed } from '../../modules/embeds';
+import { Client, Message } from "discord.js";
+import { usePlayer } from "discord-player";
+import { commandErrorEmbed } from "../../modules/command-feedback";
+import { InfoEmbed, WarningEmbed } from "../../modules/embeds";
 
 module.exports = {
   data: {
-    name: 'resume',
-    description: 'Resume the current track.',
+    name: "resume",
+    description: "Resume the current track.",
   },
 
   execute: async (client: Client, message: Message) => {
@@ -14,15 +15,18 @@ module.exports = {
     try {
       const player = usePlayer(guild);
 
-      if (!player.isPaused()) return message.reply({ embeds: [WarningEmbed('<:play:1501938994752127018> \u200b\u200b Player is already running')] });
+      if (!player.isPaused())
+        return message.reply({
+          embeds: [WarningEmbed("<:play:1501938994752127018> \u200b\u200b Player is already running")],
+        });
 
       player.resume();
 
-      const embed = InfoEmbed('<:play:1501938994752127018> \u200b\u200b Player resumed');
+      const embed = InfoEmbed("<:play:1501938994752127018> \u200b\u200b Player resumed");
 
       return message.reply({ embeds: [embed] });
     } catch (error) {
-      return message.reply(`Something went wrong.`);
+      return message.reply({ embeds: [commandErrorEmbed(error)] });
     }
   },
 };

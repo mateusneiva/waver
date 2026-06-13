@@ -30,7 +30,9 @@ const client = new Client({
   ],
 });
 
-const player = new Player(client);
+const player = new Player(client, {
+  skipFFmpeg: false,
+});
 
 registerPlayerStreamHooks(player);
 

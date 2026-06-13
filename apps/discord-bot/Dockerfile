@@ -1,12 +1,11 @@
-FROM node:22-alpine AS base
+FROM node:22-bookworm-slim AS base
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
 
 FROM base AS builder
-RUN apk update
-RUN apk add --no-cache libc6-compat
+RUN apt-get update && apt-get install -y --no-install-recommends python3 make g++ && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 RUN npm add -g turbo
@@ -14,8 +13,7 @@ COPY . .
 RUN turbo prune --scope=discord-bot --docker
 
 FROM base AS installer
-RUN apk update
-RUN apk add --no-cache libc6-compat
+RUN apt-get update && apt-get install -y --no-install-recommends python3 make g++ && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 
 COPY .gitignore .gitignore
@@ -29,16 +27,16 @@ COPY --from=builder /app/out/full/ .
 COPY turbo.json turbo.json
 
 RUN pnpm dlx turbo run build --filter=discord-bot
- 
+
 FROM base AS runner
 WORKDIR /app
 
-RUN apk update && apk add --no-cache ffmpeg
+RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg && rm -rf /var/lib/apt/lists/*
 
 # Don't run production as root
-RUN addgroup --system --gid 1001 discordjs
-RUN adduser --system --uid 1001 discordjs
+RUN groupadd --system --gid 1001 discordjs
+RUN useradd --system --uid 1001 --gid discordjs discordjs
 USER discordjs
-COPY --from=installer --chown=discordjs:discordjs /app . 
+COPY --from=installer --chown=discordjs:discordjs /app .
 
 CMD node apps/discord-bot/dist/main.js

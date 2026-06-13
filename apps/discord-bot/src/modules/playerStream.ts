@@ -54,6 +54,10 @@ export function registerPlayerStreamHooks(player: Player) {
       return Readable.fromWeb(response.body as never);
     }
 
-    return stream.stream;
+    if (stream && stream.stream) {
+      return stream.stream;
+    }
+
+    return null;
   });
 }

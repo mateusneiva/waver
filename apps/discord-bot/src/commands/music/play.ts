@@ -61,9 +61,6 @@ module.exports = {
         nodeOptions: {
           metadata: { channel: message.channel },
           selfDeaf: true,
-          disableBiquad: true,
-          disableEqualizer: true,
-          disableVolume: true,
           leaveOnEnd: true,
           leaveOnEndCooldown: 300_000,
         },

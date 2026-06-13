@@ -44,11 +44,11 @@ export function registerPlayerStreamHooks(player: Player) {
       const stream = await targetTrack.extractor.stream(targetTrack);
 
       if (typeof stream === "string") {
-        return stream;
+        return stream as any; // discord-player handles strings internally by passing to FFmpeg
       }
 
       if (stream && typeof stream === "object" && "url" in stream && typeof stream.url === "string") {
-        return stream.url;
+        return stream.url as any;
       }
 
       if (stream instanceof Readable) {
@@ -56,7 +56,7 @@ export function registerPlayerStreamHooks(player: Player) {
       }
 
       if (stream && stream.stream) {
-        return stream.stream;
+        return stream.stream as any;
       }
 
       return null;

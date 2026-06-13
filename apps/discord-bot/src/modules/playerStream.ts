@@ -1,5 +1,5 @@
 import { Readable } from "node:stream";
-import { onBeforeCreateStream, Player, QueryType } from "discord-player";
+import { onBeforeCreateStream, onAfterCreateStream, Player, QueryType, StreamType } from "discord-player";
 
 function isSpotifyTrack(queryType: string, track: { source?: string; url?: string; raw?: { source?: string } }) {
   return (
@@ -19,44 +19,35 @@ export function registerPlayerStreamHooks(player: Player) {
     console.log(`[Queue Debug ${queue.guild.name}] ${message}`);
   });
 
+  // Handle Spotify → YouTube bridging
   onBeforeCreateStream(async (track, queryType) => {
-    let targetTrack = track;
-
-    if (isSpotifyTrack(queryType, track)) {
-      const result = await player.search(`${track.author} - ${track.title}`, {
-        requestedBy: track.requestedBy ?? undefined,
-        searchEngine: QueryType.YOUTUBE_SEARCH,
-      });
-
-      const bridgedTrack = result.tracks[0];
-      if (bridgedTrack?.extractor) {
-        track.bridgedTrack = bridgedTrack;
-        track.bridgedExtractor = bridgedTrack.extractor;
-        targetTrack = bridgedTrack;
-      }
-    }
-
-    if (!targetTrack.extractor) {
+    if (!isSpotifyTrack(queryType, track)) {
       return null;
     }
 
+    const result = await player.search(`${track.author} - ${track.title}`, {
+      requestedBy: track.requestedBy ?? undefined,
+      searchEngine: QueryType.YOUTUBE_SEARCH,
+    });
+
+    const bridgedTrack = result.tracks[0];
+
+    if (!bridgedTrack?.extractor) {
+      return null;
+    }
+
+    track.bridgedTrack = bridgedTrack;
+    track.bridgedExtractor = bridgedTrack.extractor;
+
     try {
-      const stream = await targetTrack.extractor.stream(targetTrack);
-
-      if (typeof stream === "string") {
-        return stream as any; // discord-player handles strings internally by passing to FFmpeg
-      }
-
-      if (stream && typeof stream === "object" && "url" in stream && typeof stream.url === "string") {
-        return stream.url as any;
-      }
+      const stream = await bridgedTrack.extractor.stream(bridgedTrack);
 
       if (stream instanceof Readable) {
         return stream;
       }
 
-      if (stream && stream.stream) {
-        return stream.stream as any;
+      if (stream && typeof stream === "object" && "stream" in stream) {
+        return (stream as { stream: Readable }).stream;
       }
 
       return null;
@@ -64,4 +55,16 @@ export function registerPlayerStreamHooks(player: Player) {
       return null;
     }
   });
+
+  // Force all streams through FFmpeg by setting type to Arbitrary.
+  // This prevents opusscript from receiving raw HLS data (which crashes it).
+  // When type is Arbitrary, discord-voip spawns FFmpeg to decode the stream
+  // to PCM before passing it to OpusEncoder.
+  onAfterCreateStream(async (stream) => {
+    return {
+      stream,
+      type: StreamType.Arbitrary,
+    };
+  });
 }
+

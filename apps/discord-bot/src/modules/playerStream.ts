@@ -20,44 +20,48 @@ export function registerPlayerStreamHooks(player: Player) {
   });
 
   onBeforeCreateStream(async (track, queryType) => {
-    if (!isSpotifyTrack(queryType, track)) {
+    let targetTrack = track;
+
+    if (isSpotifyTrack(queryType, track)) {
+      const result = await player.search(`${track.author} - ${track.title}`, {
+        requestedBy: track.requestedBy ?? undefined,
+        searchEngine: QueryType.YOUTUBE_SEARCH,
+      });
+
+      const bridgedTrack = result.tracks[0];
+      if (bridgedTrack?.extractor) {
+        track.bridgedTrack = bridgedTrack;
+        track.bridgedExtractor = bridgedTrack.extractor;
+        targetTrack = bridgedTrack;
+      }
+    }
+
+    if (!targetTrack.extractor) {
       return null;
     }
 
-    const result = await player.search(`${track.author} - ${track.title}`, {
-      requestedBy: track.requestedBy ?? undefined,
-      searchEngine: QueryType.YOUTUBE_SEARCH,
-    });
+    try {
+      const stream = await targetTrack.extractor.stream(targetTrack);
 
-    const bridgedTrack = result.tracks[0];
-
-    if (!bridgedTrack?.extractor) {
-      return null;
-    }
-
-    track.bridgedTrack = bridgedTrack;
-    track.bridgedExtractor = bridgedTrack.extractor;
-
-    const stream = await bridgedTrack.extractor.stream(bridgedTrack);
-
-    if (stream instanceof Readable) {
-      return stream;
-    }
-
-    if (typeof stream === "string") {
-      const response = await fetch(stream);
-
-      if (!response.body) {
-        throw new Error("Failed to create bridged YouTube stream");
+      if (typeof stream === "string") {
+        return stream;
       }
 
-      return Readable.fromWeb(response.body as never);
-    }
+      if (stream && typeof stream === "object" && "url" in stream && typeof stream.url === "string") {
+        return stream.url;
+      }
 
-    if (stream && stream.stream) {
-      return stream.stream;
-    }
+      if (stream instanceof Readable) {
+        return stream;
+      }
 
-    return null;
+      if (stream && stream.stream) {
+        return stream.stream;
+      }
+
+      return null;
+    } catch {
+      return null;
+    }
   });
 }

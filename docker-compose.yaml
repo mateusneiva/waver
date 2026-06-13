@@ -7,7 +7,7 @@ services:
     restart: unless-stopped
     env_file: ./apps/web/.env
     expose:
-      - 3000
+      - 4000
 
   nginx:
     container_name: nginx
@@ -40,7 +40,7 @@ services:
       dockerfile: ./apps/docs/Dockerfile
     restart: unless-stopped
     expose:
-      - 3000
+      - 4001
 
   status:
     container_name: status

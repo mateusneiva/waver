@@ -33,7 +33,8 @@ RUN pnpm dlx turbo run build --filter=docs
 FROM base AS runner
 WORKDIR /app
 
-EXPOSE 3000
+EXPOSE 4001
+ENV PORT=4001
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs

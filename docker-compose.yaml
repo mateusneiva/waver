@@ -6,24 +6,9 @@ services:
       dockerfile: ./apps/web/Dockerfile
     restart: unless-stopped
     env_file: ./apps/web/.env
-    expose:
-      - 4000
-
-  nginx:
-    container_name: nginx
-    build:
-      context: .
-      dockerfile: ./docker/nginx/Dockerfile
-    restart: unless-stopped
     ports:
-      - 80:80
-      - 443:443
-    volumes:
-      - /etc/letsencrypt:/etc/letsencrypt:ro
-      - certbot-webroot:/var/www/certbot:ro
-    depends_on:
-      - web
-      - docs
+      - "4000:4000"
+
 
   discord-bot:
     container_name: discord-bot
@@ -39,8 +24,8 @@ services:
       context: .
       dockerfile: ./apps/docs/Dockerfile
     restart: unless-stopped
-    expose:
-      - 4001
+    ports:
+      - "4001:4001"
 
   status:
     container_name: status
@@ -50,5 +35,3 @@ services:
     restart: unless-stopped
     env_file: ./apps/status/.env
 
-volumes:
-  certbot-webroot:

@@ -1,0 +1,7 @@
+{
+  "name": "mediaplex",
+  "version": "1.0.0",
+  "description": "Stub that disables mediaplex so @discordjs/voice uses ffmpeg instead",
+  "main": "index.js",
+  "private": true
+}

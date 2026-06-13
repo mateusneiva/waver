@@ -1,5 +1,5 @@
 import { Readable } from "node:stream";
-import { onBeforeCreateStream, onAfterCreateStream, Player, QueryType, StreamType } from "discord-player";
+import { onBeforeCreateStream, type Player, QueryType } from "discord-player";
 
 function isSpotifyTrack(queryType: string, track: { source?: string; url?: string; raw?: { source?: string } }) {
   return (
@@ -19,7 +19,6 @@ export function registerPlayerStreamHooks(player: Player) {
     console.log(`[Queue Debug ${queue.guild.name}] ${message}`);
   });
 
-  // Handle Spotify → YouTube bridging
   onBeforeCreateStream(async (track, queryType) => {
     if (!isSpotifyTrack(queryType, track)) {
       return null;
@@ -56,15 +55,4 @@ export function registerPlayerStreamHooks(player: Player) {
     }
   });
 
-  // Force all streams through FFmpeg by setting type to Arbitrary.
-  // This prevents opusscript from receiving raw HLS data (which crashes it).
-  // When type is Arbitrary, discord-voip spawns FFmpeg to decode the stream
-  // to PCM before passing it to OpusEncoder.
-  onAfterCreateStream(async (stream) => {
-    return {
-      stream,
-      type: StreamType.Arbitrary,
-    };
-  });
 }
-

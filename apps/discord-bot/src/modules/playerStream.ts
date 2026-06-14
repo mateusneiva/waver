@@ -10,6 +10,35 @@ function isSpotifyTrack(queryType: string, track: { source?: string; url?: strin
   );
 }
 
+function isSoundCloudTrack(queryType: string, track: { source?: string; raw?: { source?: string } }) {
+  return (
+    queryType === QueryType.SOUNDCLOUD_TRACK || track.source === "soundcloud" || track.raw?.source === "soundcloud"
+  );
+}
+
+async function bridgeToYoutube(track: any, player: Player): Promise<Readable | null> {
+  const result = await player.search(`${track.author} - ${track.title}`, {
+    requestedBy: track.requestedBy ?? undefined,
+    searchEngine: QueryType.YOUTUBE_SEARCH,
+  });
+
+  const ytTrack = result.tracks[0];
+  if (!ytTrack?.extractor) return null;
+
+  const stream = await ytTrack.extractor.stream(ytTrack);
+  if (!stream) return null;
+
+  if (stream instanceof Readable) return stream;
+
+  if (typeof stream === "string") {
+    const res = await fetch(stream);
+    if (!res.body) throw new Error("Failed to fetch bridged stream");
+    return Readable.fromWeb(res.body as never);
+  }
+
+  return (stream as any).stream ?? null;
+}
+
 export function registerPlayerStreamHooks(player: Player) {
   player.on("debug", (message) => {
     console.log(`[Player Debug] ${message}`);
@@ -19,40 +48,11 @@ export function registerPlayerStreamHooks(player: Player) {
     console.log(`[Queue Debug ${queue.guild.name}] ${message}`);
   });
 
-  // onBeforeCreateStream(async (track, queryType) => {
-  //   if (!isSpotifyTrack(queryType, track)) {
-  //     return null;
-  //   }
+  onBeforeCreateStream(async (track, queryType) => {
+    if (isSpotifyTrack(queryType, track) || isSoundCloudTrack(queryType, track)) {
+      return bridgeToYoutube(track, player);
+    }
 
-  //   const result = await player.search(`${track.author} - ${track.title}`, {
-  //     requestedBy: track.requestedBy ?? undefined,
-  //     searchEngine: QueryType.YOUTUBE_SEARCH,
-  //   });
-
-  //   const bridgedTrack = result.tracks[0];
-
-  //   if (!bridgedTrack?.extractor) {
-  //     return null;
-  //   }
-
-  //   track.bridgedTrack = bridgedTrack;
-  //   track.bridgedExtractor = bridgedTrack.extractor;
-
-  //   try {
-  //     const stream = await bridgedTrack.extractor.stream(bridgedTrack);
-
-  //     if (stream instanceof Readable) {
-  //       return stream;
-  //     }
-
-  //     if (stream && typeof stream === "object" && "stream" in stream) {
-  //       return (stream as { stream: Readable }).stream;
-  //     }
-
-  //     return null;
-  //   } catch {
-  //     return null;
-  //   }
-  // });
-
+    return null;
+  });
 }

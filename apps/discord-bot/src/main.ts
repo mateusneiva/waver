@@ -1,5 +1,5 @@
 import { ActivityType, Client, GatewayIntentBits, PresenceUpdateStatus } from "discord.js";
-import { Player } from "discord-player";
+import { Player, QueryType } from "discord-player";
 import { DefaultExtractors } from "@discord-player/extractor";
 import { YoutubeExtractor } from "discord-player-youtubei";
 import "dotenv/config";
@@ -62,6 +62,17 @@ async function bootstrap() {
   await player.extractors.register(YoutubeExtractor, {
     disablePlayer: true,
     cookie: parseNetscapeCookies(rawCookies),
+    createStream: async (track, ext) => {
+      const result = await player.search(`${track.author} - ${track.title}`, {
+        requestedBy: track.requestedBy ?? undefined,
+        searchEngine: QueryType.YOUTUBE_SEARCH,
+      });
+
+      const ytTrack = result.tracks[0];
+      if (!ytTrack) throw new Error("No YouTube track found");
+
+      return ext.stream(ytTrack) as unknown as Promise<string>;
+    },
   });
 
   await client.login(DISCORD_BOT_TOKEN);

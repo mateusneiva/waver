@@ -19,6 +19,14 @@ export function registerPlayerStreamHooks(player: Player) {
     console.log(`[Queue Debug ${queue.guild.name}] ${message}`);
   });
 
+  player.events.on("playerError", (queue, error, track) => {
+    console.error("[playerError]", error.message, error.stack);
+  });
+
+  player.events.on("error", (queue, error) => {
+    console.error("[error]", error.message, error.stack);
+  });
+
   onBeforeCreateStream(async (track, queryType) => {
     if (!isSpotifyTrack(queryType, track)) {
       return null;

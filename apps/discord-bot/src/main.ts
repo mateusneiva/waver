@@ -31,14 +31,6 @@ const client = new Client({
   ],
 });
 
-process.on("uncaughtException", (err) => {
-  console.error("[uncaughtException]", err);
-});
-
-process.on("unhandledRejection", (reason) => {
-  console.error("[unhandledRejection]", reason);
-});
-
 const player = new Player(client, {
   skipFFmpeg: false,
   blockStreamFrom: ["com.discord-player.spotifyextractor"],
@@ -56,10 +48,12 @@ registerPlayerStreamHooks(player);
 
 async function bootstrap() {
   await player.extractors.loadMulti(DefaultExtractors);
-  patchSoundCloudStream(player);
+
   await player.extractors.register(YoutubeExtractor, {
     disablePlayer: true,
   });
+
+  patchSoundCloudStream(player);
 
   await client.login(DISCORD_BOT_TOKEN);
   loadCommands(client);

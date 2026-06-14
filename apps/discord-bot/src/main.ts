@@ -31,7 +31,6 @@ const client = new Client({
 });
 
 const player = new Player(client, {
-  skipFFmpeg: false,
   blockStreamFrom: ["com.discord-player.spotifyextractor"],
 });
 
@@ -41,9 +40,6 @@ async function bootstrap() {
   await player.extractors.loadMulti(DefaultExtractors);
   await player.extractors.register(YoutubeExtractor, {
     disablePlayer: true,
-    ...(process.env.YOUTUBE_COOKIE && {
-      cookie: process.env.YOUTUBE_COOKIE,
-    }),
   });
 
   await client.login(DISCORD_BOT_TOKEN);

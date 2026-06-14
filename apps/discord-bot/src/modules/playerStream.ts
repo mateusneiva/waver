@@ -1,5 +1,14 @@
-import type { Player } from "discord-player";
-import { GuildQueueEvent } from "discord-player";
+import { Readable } from "node:stream";
+import { onBeforeCreateStream, type Player, QueryType } from "discord-player";
+
+function isSpotifyTrack(queryType: string, track: { source?: string; url?: string; raw?: { source?: string } }) {
+  return (
+    queryType === QueryType.SPOTIFY_SONG ||
+    track.source === "spotify" ||
+    track.raw?.source === "spotify" ||
+    /^https?:\/\/(open\.)?spotify\.com\/track\//i.test(track.url ?? "")
+  );
+}
 
 export function registerPlayerStreamHooks(player: Player) {
   player.on("debug", (message) => {
@@ -10,15 +19,45 @@ export function registerPlayerStreamHooks(player: Player) {
     console.log(`[Queue Debug ${queue.guild.name}] ${message}`);
   });
 
-  player.events.on(GuildQueueEvent.PlayerError, (queue, error, track) => {
-    console.error(`[Player Error ${queue.guild.name}] Track: ${track?.title}`, error);
-  });
+  onBeforeCreateStream(async (track, queryType) => {
+    if (!isSpotifyTrack(queryType, track)) {
+      return null;
+    }
 
-  player.events.on(GuildQueueEvent.PlayerSkip, (queue, track, reason, description) => {
-    console.warn(`[Player Skip ${queue.guild.name}] Track: ${track?.title} | Reason: ${reason} | ${description}`);
-  });
+    const result = await player.search(`${track.author} - ${track.title}`, {
+      requestedBy: track.requestedBy ?? undefined,
+      searchEngine: QueryType.YOUTUBE_SEARCH,
+    });
 
-  player.events.on(GuildQueueEvent.Error, (queue, error) => {
-    console.error(`[Queue Error ${queue.guild.name}]`, error);
+    const bridgedTrack = result.tracks[0];
+
+    if (!bridgedTrack?.extractor) {
+      return null;
+    }
+
+    track.bridgedTrack = bridgedTrack;
+    track.bridgedExtractor = bridgedTrack.extractor;
+
+    const stream = await bridgedTrack.extractor.stream(bridgedTrack);
+
+    if (!stream) {
+      return null;
+    }
+
+    if (stream instanceof Readable) {
+      return stream;
+    }
+
+    if (typeof stream === "string") {
+      const response = await fetch(stream);
+
+      if (!response.body) {
+        throw new Error("Failed to create bridged YouTube stream");
+      }
+
+      return Readable.fromWeb(response.body as never);
+    }
+
+    return stream.stream;
   });
 }

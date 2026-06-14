@@ -31,6 +31,7 @@ const client = new Client({
 });
 
 const player = new Player(client, {
+  skipFFmpeg: false,
   blockStreamFrom: ["com.discord-player.spotifyextractor"],
 });
 

@@ -30,9 +30,25 @@ const client = new Client({
   ],
 });
 
+process.on("uncaughtException", (err) => {
+  console.error("[uncaughtException]", err);
+});
+
+process.on("unhandledRejection", (reason) => {
+  console.error("[unhandledRejection]", reason);
+});
+
 const player = new Player(client, {
   skipFFmpeg: false,
   blockStreamFrom: ["com.discord-player.spotifyextractor"],
+});
+
+player.events.on("error", (queue, error) => {
+  console.error("[error]", error.message, error.stack);
+});
+
+player.events.on("debug", (queue, message) => {
+  console.log(`[Queue Debug ${queue.guild.name}] ${message}`);
 });
 
 registerPlayerStreamHooks(player);

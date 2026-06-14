@@ -44,6 +44,9 @@ importers:
       glob:
         specifier: 10.4.2
         version: 10.4.2
+      mediaplex:
+        specifier: 1.0.0
+        version: 1.0.0
       youtube-dl-exec:
         specifier: 3.1.7
         version: 3.1.7(debug@4.4.3)

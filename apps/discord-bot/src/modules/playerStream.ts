@@ -19,14 +19,6 @@ export function registerPlayerStreamHooks(player: Player) {
     console.log(`[Queue Debug ${queue.guild.name}] ${message}`);
   });
 
-  player.events.on("playerError", (queue, error, track) => {
-    console.error("[playerError]", error.message, error.stack);
-  });
-
-  player.events.on("error", (queue, error) => {
-    console.error("[error]", error.message, error.stack);
-  });
-
   onBeforeCreateStream(async (track, queryType) => {
     if (!isSpotifyTrack(queryType, track)) {
       return null;
@@ -46,26 +38,21 @@ export function registerPlayerStreamHooks(player: Player) {
     track.bridgedTrack = bridgedTrack;
     track.bridgedExtractor = bridgedTrack.extractor;
 
-    const stream = await bridgedTrack.extractor.stream(bridgedTrack);
+    try {
+      const stream = await bridgedTrack.extractor.stream(bridgedTrack);
 
-    if (!stream) {
-      return null;
-    }
-
-    if (stream instanceof Readable) {
-      return stream;
-    }
-
-    if (typeof stream === "string") {
-      const response = await fetch(stream);
-
-      if (!response.body) {
-        throw new Error("Failed to create bridged YouTube stream");
+      if (stream instanceof Readable) {
+        return stream;
       }
 
-      return Readable.fromWeb(response.body as never);
-    }
+      if (stream && typeof stream === "object" && "stream" in stream) {
+        return (stream as { stream: Readable }).stream;
+      }
 
-    return stream.stream;
+      return null;
+    } catch {
+      return null;
+    }
   });
+
 }

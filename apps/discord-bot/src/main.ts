@@ -7,6 +7,7 @@ import "dotenv/config";
 import { loadEvents } from "./handlers/events";
 import { loadCommands } from "./handlers/commands";
 import { registerPlayerStreamHooks } from "./modules/playerStream";
+import { patchSoundCloudStream } from "./patches/soundcloud";
 
 const DISCORD_BOT_TOKEN = process.env.DISCORD_BOT_TOKEN;
 
@@ -55,6 +56,7 @@ registerPlayerStreamHooks(player);
 
 async function bootstrap() {
   await player.extractors.loadMulti(DefaultExtractors);
+  patchSoundCloudStream(player);
   await player.extractors.register(YoutubeExtractor, {
     disablePlayer: true,
   });

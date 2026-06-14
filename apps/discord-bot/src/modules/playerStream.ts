@@ -28,30 +28,33 @@ export function registerPlayerStreamHooks(player: Player) {
   });
 
   onBeforeCreateStream(async (track, queryType) => {
-    if (isSpotifyTrack(queryType, track)) {
-      // ... seu código existente
-    }
+    if (
+      queryType === QueryType.SOUNDCLOUD_TRACK ||
+      track.source === "soundcloud" ||
+      track.raw?.source === "soundcloud"
+    ) {
+      if (!track.extractor) return null;
 
-    // Temporário: intercepta qualquer track pra debugar o stream
-    if (track.source === "soundcloud") {
-      const extractor = track.extractor;
-      if (extractor) {
-        const stream = await extractor.stream(track);
-        console.log("[Stream Debug] type:", typeof stream);
+      const stream = await track.extractor.stream(track);
 
-        if (stream instanceof Readable) {
-          let bytes = 0;
-          stream.on("data", (chunk) => {
-            bytes += chunk.length;
-          });
-          stream.on("end", () => console.log("[Stream Debug] ended, total bytes:", bytes));
-          stream.on("error", (err) => console.error("[Stream Debug] error:", err));
-          // Não retorna aqui — deixa o player usar normalmente
-        }
+      if (!stream) return null;
+
+      if (stream instanceof Readable) return stream;
+
+      if (typeof stream === "string") {
+        const response = await fetch(stream, {
+          headers: {
+            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36",
+          },
+        });
+
+        if (!response.body) throw new Error("Failed to fetch SoundCloud stream");
+
+        return Readable.fromWeb(response.body as never);
       }
-    }
 
-    return null;
+      return (stream as any).stream as Readable;
+    }
 
     // if (!isSpotifyTrack(queryType, track)) {
     //   return null;

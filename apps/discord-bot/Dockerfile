@@ -22,6 +22,7 @@ COPY --from=builder /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
 RUN corepack enable
 ENV YOUTUBE_DL_SKIP_PYTHON_CHECK=1
 RUN pnpm install --frozen-lockfile
+RUN pnpm add mediaplex --filter discord-bot
 
 COPY --from=builder /app/out/full/ .
 COPY turbo.json turbo.json
@@ -33,7 +34,6 @@ WORKDIR /app
 
 RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg && rm -rf /var/lib/apt/lists/*
 
-# Don't run production as root
 RUN groupadd --system --gid 1001 discordjs
 RUN useradd --system --uid 1001 --gid discordjs discordjs
 USER discordjs

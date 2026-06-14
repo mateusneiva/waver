@@ -1,4 +1,4 @@
-import { Readable } from "node:stream";
+import { Readable, PassThrough } from "node:stream";
 import type { Player } from "discord-player";
 
 export function patchSoundCloudStream(player: Player) {
@@ -26,6 +26,24 @@ export function patchSoundCloudStream(player: Player) {
     if (!res.body) throw new Error("Failed to fetch SoundCloud stream");
 
     console.log("[Patch] SoundCloud stream fetched, status:", res.status);
-    return Readable.fromWeb(res.body as never);
+    
+    const readable = Readable.fromWeb(res.body as never, {
+      highWaterMark: 1024 * 512, // 512KB de buffer
+    });
+
+    let totalBytes = 0;
+    const passThrough = new PassThrough();
+
+    readable.on("data", (chunk) => {
+      totalBytes += chunk.length;
+      console.log("[Patch] chunk received:", chunk.length, "total:", totalBytes);
+    });
+
+    readable.on("end", () => console.log("[Patch] stream ended, total bytes:", totalBytes));
+    readable.on("error", (err) => console.error("[Patch] stream error:", err));
+
+    readable.pipe(passThrough);
+    
+    return passThrough;
   };
 }

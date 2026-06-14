@@ -19,40 +19,40 @@ export function registerPlayerStreamHooks(player: Player) {
     console.log(`[Queue Debug ${queue.guild.name}] ${message}`);
   });
 
-  onBeforeCreateStream(async (track, queryType) => {
-    if (!isSpotifyTrack(queryType, track)) {
-      return null;
-    }
+  // onBeforeCreateStream(async (track, queryType) => {
+  //   if (!isSpotifyTrack(queryType, track)) {
+  //     return null;
+  //   }
 
-    const result = await player.search(`${track.author} - ${track.title}`, {
-      requestedBy: track.requestedBy ?? undefined,
-      searchEngine: QueryType.YOUTUBE_SEARCH,
-    });
+  //   const result = await player.search(`${track.author} - ${track.title}`, {
+  //     requestedBy: track.requestedBy ?? undefined,
+  //     searchEngine: QueryType.YOUTUBE_SEARCH,
+  //   });
 
-    const bridgedTrack = result.tracks[0];
+  //   const bridgedTrack = result.tracks[0];
 
-    if (!bridgedTrack?.extractor) {
-      return null;
-    }
+  //   if (!bridgedTrack?.extractor) {
+  //     return null;
+  //   }
 
-    track.bridgedTrack = bridgedTrack;
-    track.bridgedExtractor = bridgedTrack.extractor;
+  //   track.bridgedTrack = bridgedTrack;
+  //   track.bridgedExtractor = bridgedTrack.extractor;
 
-    try {
-      const stream = await bridgedTrack.extractor.stream(bridgedTrack);
+  //   try {
+  //     const stream = await bridgedTrack.extractor.stream(bridgedTrack);
 
-      if (stream instanceof Readable) {
-        return stream;
-      }
+  //     if (stream instanceof Readable) {
+  //       return stream;
+  //     }
 
-      if (stream && typeof stream === "object" && "stream" in stream) {
-        return (stream as { stream: Readable }).stream;
-      }
+  //     if (stream && typeof stream === "object" && "stream" in stream) {
+  //       return (stream as { stream: Readable }).stream;
+  //     }
 
-      return null;
-    } catch {
-      return null;
-    }
-  });
+  //     return null;
+  //   } catch {
+  //     return null;
+  //   }
+  // });
 
 }

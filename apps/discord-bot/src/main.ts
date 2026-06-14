@@ -7,7 +7,8 @@ import "dotenv/config";
 import { loadEvents } from "./handlers/events";
 import { loadCommands } from "./handlers/commands";
 import { registerPlayerStreamHooks } from "./modules/playerStream";
-import { patchSoundCloudStream } from "./patches/soundcloud";
+import { readFileSync } from "fs";
+import { resolve } from "path";
 
 const DISCORD_BOT_TOKEN = process.env.DISCORD_BOT_TOKEN;
 
@@ -43,9 +44,8 @@ async function bootstrap() {
 
   await player.extractors.register(YoutubeExtractor, {
     disablePlayer: true,
+    cookie: readFileSync(resolve(process.cwd(), "cookies.txt"), "utf-8"),
   });
-
-  patchSoundCloudStream(player);
 
   await client.login(DISCORD_BOT_TOKEN);
   loadCommands(client);

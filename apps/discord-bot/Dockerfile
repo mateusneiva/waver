@@ -38,5 +38,6 @@ RUN groupadd --system --gid 1001 discordjs
 RUN useradd --system --uid 1001 --gid discordjs discordjs
 USER discordjs
 COPY --from=installer --chown=discordjs:discordjs /app .
+COPY --chown=discordjs:discordjs cookies.txt ./cookies.txt
 
 CMD node apps/discord-bot/dist/main.js

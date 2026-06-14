@@ -11,14 +11,6 @@ function isSpotifyTrack(queryType: string, track: { source?: string; url?: strin
 }
 
 export function registerPlayerStreamHooks(player: Player) {
-  player.on("debug", (message) => {
-    console.log(`[Player Debug] ${message}`);
-  });
-
-  player.events.on("debug", (queue, message) => {
-    console.log(`[Queue Debug ${queue.guild.name}] ${message}`);
-  });
-
   onBeforeCreateStream(async (track, queryType) => {
     if (!isSpotifyTrack(queryType, track)) {
       return null;
